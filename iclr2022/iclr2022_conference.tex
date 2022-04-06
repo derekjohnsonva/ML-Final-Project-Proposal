@@ -1,0 +1,173 @@
+
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2022_conference,times}
+\usepackage{graphicx}
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+
+
+\title{Project Proposal UVA CS 6316 \\ Spring 2022}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+\author{Akhil Shekar, Derek Johnson, William Smith\\
+Department of Computer Science\\
+University of Virginia\\
+\texttt{\{as8hu,dej3tc,wbs3ra\}@virginia.edu} \\
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+
+\maketitle
+
+% \begin{abstract}
+% The abstract paragraph should be indented 1/2~inch (3~picas) on both left and
+% right-hand margins. Use 10~point type, with a vertical spacing of 11~points.
+% The word \textsc{Abstract} must be centered, in small caps, and in point size 12. Two
+% line spaces precede the abstract. The abstract must be limited to one
+% paragraph.
+% \end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% SECTION %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% PROBLEM DEFINITION %%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Problem definition}
+
+\emph{Aim} -  Create a system that is capable of labeling German traffic signs and investigate ways to secure it against adversarial attacks.
+
+\emph{Input} - An image (.png) that contains at least 30 pixels of a single physical traffic sign.
+
+\emph{Output} - A class id. Each class id refers to a unique German street sign (ex. yield)
+
+\emph{Motivation} - 
+Image classification has taken on renewed importance in the realm of autonomous driving which relies on data fed from the cameras to drive a car through roadways. Image classification is used to read traffic signs and help the car regulate its speed on a given stretch of road. It also helps the car recognize special zones for overtaking, slowing down or switching lanes. In effect, it can enhance the understanding of the road in which the autonomous vehicle is driving.
+
+When a given traffic signboard is altered or misunderstood by the model, it can lead to disastrous consequences for the autonomous driving unit. Hence, these adversarial attacks need to be studied extensively in order to create better classification systems. In our case, we will be exploring how to make our system resilient to input image alterations.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% SECTION %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% PROPOSED IDEA %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Proposed idea}
+High-level overview of our idea :
+\begin{enumerate}
+    \item Train an image classifier to classify German traffic signs
+    \item Test the accuracy and other metrics (outlined below).
+    \item Test the robustness of the classifier to adversarial attacks
+    \item Generate adversarial attacks retrain the classifier, and re-check metrics.
+\end{enumerate}
+
+Examples of classifier algorithms to be used from the scikit package -
+\begin{itemize}
+    \item Support Vector Machine
+    \item k-Nearest Neighbors
+    \item Random Forests
+    \item Neural Networks
+\end{itemize}
+
+The following are the metrics to test -
+\begin{itemize}
+    \item \emph{Prediction Accuracy}
+    \item \emph{Training Time (in seconds)} - time to train the classification on the training subset of the data
+    \item \emph{Classification time (in seconds)} - time the model takes to classify an image.
+\end{itemize}
+
+Prior work in the street sign labeling domain indicates neural networks seem to be the most common tool applied. However, SVMs have also been demonstrated to be effective at the classification task. While both of these techniques are susceptible to attack, neural networks seem to be more vulnerable.
+Adversarial attacks are images fed to the machine learning model to misclassify a given image,  usually with malintent. The adversarial attacks can happen both during the training phase if the data is purposefully misclassified and also during inference period when the test data is purposefully altered with noise or other modifications that cause the model to mispredict. 
+We aim to generate adversarial data and add that to the training dataset to improve the prediction accuracy with the hope of making the model more resistant to these adversarial attacks. 
+In order to generating adversarial data, we could construct models to introduce random noise into the given dataset. Additionally, we could generate new images with a percentage of the pixels altered.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% SECTION %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% RELATED WORK %%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Related work}
+\begin{enumerate}
+    \item \citet{WangHierarchy}
+    \emph{Summary} - This paper provides a high level overview of a very effective traffic sign categorization technique. This approach was applied to the same data set that we plan on using. In the paper, the researchers employed a three step approach
+    \begin{enumerate}
+        \item Use a pre-classification step to sort the traffic signs into super-classes. These "super-classes" all share unique visual information (i.e. color and/or shape). In the paper, an SVM was used to classify images into super-classes.
+        \item Different forms of image regularization are then applied based on the super-class the image was sorted into. Some techniques include orientation adjustment and pixel color extraction.
+        \item Finally, the adjusted images are ready for sub classification. This step differs for each super-class but they all basically break down to feature extraction followed by applying an SVM.
+    \end{enumerate}
+
+    \item \cite{Dong_2020_CVPR}
+    \emph{Summary} - This paper tests the robustness of defense methods used to counter common attack methods used during evaluation. The motivation was to perform a comprehensive robustness analysis by testing numerous attacks and defenses against one another to show the whole picture surrounding the effects of adversarial attacks.
+    \begin{enumerate}
+        \item The types of attack methods are defined, based on the amount of knowledge available to the attacker and the general formulation of the attack, as: \emph{white-box attacks, transfer-based black-box attacks, score-based black-box attacks, decision-based black-box attacks}. Then specific instances of these categories are selected to be used as an attack methods in the robustness analysis.
+        \item The defenses are similarly grouped by methodology into: \emph{robust training, input transformation, randomization, model ensemble, and certified defenses}. Some instances of defenses can fit into multiple categories as the categories are not exclusive.
+        \item The results show the accuracy of the classifiers with defense models vs a measure of the attack (perturbation budget and attack strength). The conclusions are that no defense model is completely robust to all attack methods and no attack method can break down all defense model. So researchers must make a compromise in order to build a classifier which is ideal for a specific use case.
+    \end{enumerate}
+    The performance of the defense methods are evaluated for robustness against a wide range of attacks.
+    
+    \begin{item}
+        \cite{AkharAdvars} 
+        One of the most important techniques in computer vision is deep learning. However, this technique is susceptible to attacks that manipulate predictions by adding “perturbations in images and videos”. This paper is an overview of adversarial methods and how to make systems more resistant to them. Of particular interest to us is the section on physical world attacks. From the discussion of defense strategies, two seem to be the most directly useful to us.
+        \begin{enumerate}
+            \item \emph{Adversarial training}: the basic idea is to expose the model to adversarial examples during the training phase. This way the model develops resistance to these attacks
+            \item \emph{Input transformations for defense}: This defense measure introduces a “cleaning” phase before classification where input images can be sanitized in order to make them easier to classify. 
+        \end{enumerate}
+    \end{item}
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% SECTION %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% DATASETS %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Datasets}
+For this project we will be using the German Traffic Sign Recognition Benchmark (GTSRB). 
+It is a large dataset provided by Ruhr University’s Institute of Neuroinformatics which contains a set of 50,000 images in total and these are classified into 40 different classes. 
+The training dataset is clearly annotated and is a large, lifelike database.
+See \citet{Stallkamp2012} for more information
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% SECTION %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% TIMELINE %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Timeline}
+Below, we have attached a Gantt chart that outlines our plan for working on this project over the next month. Day 1 corresponds with 04/07/2022. 
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=13cm]{iclr2022/ProposalGantChart.png}
+\end{center}
+\caption{Gantt Chart for next 2 weeks.}
+\end{figure}
+
+\bibliography{iclr2022_conference}
+\bibliographystyle{iclr2022_conference}
+
+% \appendix
+% \section{Appendix}
+% You may include other additional sections here.
+
+\end{document}
